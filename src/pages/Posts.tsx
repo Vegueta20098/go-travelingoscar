@@ -1,41 +1,70 @@
-import { Title } from "../components/Title"
+import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom"; // Asegúrate de importar useParams
+import { Title } from "../components/Title";
+
+type Hotel = {
+  id: number;
+  name: string;
+  description: string;
+  starring: number;
+  address: string;
+  price: number;
+
+  image: string;
+};
 
 export const Posts = () => {
-    let hotels = [
-        {
-            from: "Erlingview",
-            to: "Runolfsdottirton",
-            price: "1046",
-            image: "https://via.placeholder.com/640x480.png/005511?text=vel",
-            date: "1988-07-27",
-            duration: "09:15:02",
-            created_at: "2023-08-11T18:18:48.000000Z",
-            updated_at: "2023-08-11T18:18:48.000000Z",
-        
-        },
-    ]
+  const [hotel, setHotel] = useState<Hotel>(); // Crea un estado para almacenar los detalles del hotel
 
-    return (
-        <div>
-            <Title texto="Busca un hotel cerca de ti" />
-            <div className="grid grid-cols-1 gap-4 mt-4 sm:grid-cols-2">
-                {hotels.map((hotel, index) => (
-                    <div key={index} className="overflow-hidden bg-white rounded-lg shadow-md hover:cursor-pointer">
-                        <img src={hotel.image} alt={hotel.from + ' to ' + hotel.to} className="object-cover object-center w-full h-56" />
-                        <div className="py-4">
-                            <h3 className="flex justify-between mb-1 text-xs tracking-widest text-gray-500 title-font">
-                                {hotel.from} to {hotel.to}
-                                <span>Precio: ${hotel.price}</span>
-                            </h3>
-                            <p className="text-sm text-gray-400">Fecha: {hotel.date}</p>
-                            <p className="text-sm text-gray-400">Duración: {hotel.duration}</p>
-                            <p className="text-sm text-gray-400">Creado en: {hotel.created_at}</p>
-                            <p className="text-sm text-gray-400">Actualizado en: {hotel.updated_at}</p>
-                        </div>
-                    </div>
-                ))}
+  const id = useParams(); // Recupera el hotelId de los parámetros de la URL
+
+  console.log(id);
+
+  useEffect(() => {
+    fetch(`https://api-tests.workingpos.com/api/go-traveling/hotels/${id.id}`) // Hace una petición GET a la API
+      .then((response) => response.json())
+      .then((data) => {
+        console.log(data);
+        setHotel(data.data); // Actualiza el estado con los datos de la API
+      }); // Actualiza el estado con los datos de la API
+  }, []);
+  console.log(hotel);
+
+  return (
+    <div>
+      <Title texto="Detalles del hotel" />
+      <div className="overflow-hidden bg-white rounded-lg shadow-md hover:cursor-pointer">
+        {hotel && (
+          <div
+            key={hotel.id}
+            className="overflow-hidden bg-white rounded-lg shadow-md hover:cursor-pointer"
+          >
+            <img
+              src={hotel.image}
+              alt="hotel"
+              className="object-cover object-center w-full h-56"
+            />
+
+            <div className="py-4">
+              <h3 className="flex justify-between mb-1 text-xs tracking-widest text-gray-500 title-font">
+                {hotel.name}
+                <span>Precio: ${hotel.price}</span>
+              </h3>
+              <p className="text-sm text-gray-400">
+                Descripcion: {hotel.description}
+              </p>
+              <p className="text-sm text-gray-400">
+                Estrellas: {hotel.starring}
+              </p>
+              <p className="text-sm text-gray-400">address: {hotel.address}</p>
             </div>
-        </div>
-    )
-}
 
+            <button className="px-4 py-2 w-full text-sm text-white bg-blue-500 rounded-b-md hover:bg-blue-600">
+              Reservar  
+            </button>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
