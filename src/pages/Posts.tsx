@@ -68,3 +68,4 @@ export const Posts = () => {
     </div>
   );
 };
+
